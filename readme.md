@@ -32,22 +32,25 @@ Poprawne wykonanie płatności
 ## Testowanie
 ![](https://i.imgur.com/KiJCjq7.jpg)
 - [x]  Stworzony Mockowy obiekt.
+- [x] Testowane metody oraz wyjątki
 
 Testuję jednostkowo czy metody obiektu otrzymują poprawne parametry. Przy zwiększeniu complexity projektu byłoby to bardzo przydatne do walidacji arrays lub obiektów (wtedy użyłbym Dependency Injection w testach), natomiast dla celów tego prostego zadania do metod obiektu podawane są zmienne (np. info konta podawane do sendMoney() to INT z numerem konta a nie Obiekt Account).
 
 Jako, że na potrzeby uproszczenia mojego projektu powstała tylko jedna klasa (`Bank`) to mockuję tylko jedną klasę w testach. Przy rozwoju aplikacji na pewno stworzyłbym instację w metodzie setUp() testu (patrz "Dalsze kroki").
 
 ## Dalsze kroki
-Dodałbym testowanie exceptions wyrzucanych przy sendMoney() [tak jak tutaj](https://phpunit.readthedocs.io/en/10.0/writing-tests-for-phpunit.html?highlight=exception#expecting-exceptions)
 
 Stworzyłbym kopię bazy danych (np. `bank_clone`). Testy jednostkowe wysyłałyby zapytania do kopii bazy danych w celu walidacji warunków metod.
 
 Obiekty takie jak Account(), User() itd. przy testowaniu tworzyłbym w setUp() które wywołane zostaje przed każdym testem:
 ```php
-private $bankMock;
+private $bank;
 
-protected function setUp(): void
-{
-     $this->bank = new Bank();
-}
+public function setUp(): void
+    {
+        $this->bank = $this->createMock(Bank::class);
+    }
 ```
+
+### Dodatkowe notatki
+Ogólnie zadanko skończyłem wczoraj, ale teraz miałem wolną chwilę, więc dodałem testowanie wyjątków oraz DI w teście.

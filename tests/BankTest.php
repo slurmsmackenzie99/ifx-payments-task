@@ -6,64 +6,114 @@ require 'src/Bank.php';
 
 class BankTest extends TestCase
 {
+    /**
+     * @var Bank
+     */
+    private $bank;
+
+    /**
+     * Set up the mock Bank object
+     */
+    public function setUp(): void
+    {
+        $this->bank = $this->createMock(Bank::class);
+    }
+
     /** @test */
     public function testAddMoney()
     {
-        $bankMock = $this->createMock(Bank::class);
-        $bankMock->method('addMoney')->willReturn(true);
-        $bankMock->expects($this->once())->method('addMoney')->with(123456, 100, 'USD');
+        // Define the expectations for the addMoney method
+        $this->bank->expects($this->once())
+            ->method('addMoney')
+            ->with(
+                $this->equalTo('1234567890'),
+                $this->equalTo(1000),
+                $this->equalTo('USD')
+            );
 
-        $account_number = 123456;
-        $amount = 100;
-        $currency = 'USD';
-
-        $result = $bankMock->addMoney($account_number, $amount, $currency);
-        
-        $this->assertTrue($result);
+        // Call the addMoney method
+        $this->bank->addMoney('1234567890', 1000, 'USD');
+   
     }
 
+    /** @test */
     public function testSendMoney()
     {
-        $bankMock = $this->createMock(Bank::class);
-        $bankMock->method('sendMoney')->willReturn(true);
+        // Create a mock object for the Bank class
+        $this->bank = $this->createMock(Bank::class);
 
-        // Testing if we are sending the correct values to the send method
-        $bankMock->expects($this->once())->method('sendMoney')->with(123456, 100, 'USD');
+        // Define the expectations for the sendMoney method
+        $this->bank->expects($this->once())
+            ->method('sendMoney')
+            ->with(
+                $this->equalTo('1234567890'),
+                $this->equalTo(1000),
+                $this->equalTo('USD')
+            );
 
-        $account_number = 123456;
-        $amount = 100;
-        $currency = 'USD';
-
-        $result = $bankMock->sendMoney($account_number, $amount, $currency);
-        
-        $this->assertTrue($result);
+        // Call the sendMoney method
+        $this->bank->sendMoney('1234567890', 1000, 'USD');
     }
 
+    /** @test */
     public function testPaymentsToday()
     {
-        $bankMock = $this->createMock(Bank::class);
-        $bankMock->method('checkPaymentsToday')->willReturn(5);
+        $this->bank = $this->createMock(Bank::class);
 
         // Always passing $account_number as parameter
-        $bankMock->expects($this->once())->method('checkPaymentsToday')->with(123456);
+        $this->bank->expects($this->once())->method('checkPaymentsToday')->with(123456)->willReturn(5);
 
-        $account_number = 123456;
-        $amount_of_transactions = 5;
-
-        $result = $bankMock->checkPaymentsToday($account_number);
+        $result = $this->bank->checkPaymentsToday(123456);
         
-        $this->assertEquals($amount_of_transactions, $result);
+        $this->assertEquals(5, $result);
     }
 
+    /** @test */
     public function testMakePayment()
     {
-        $bankMock = $this->createMock(Bank::class);
-        $bankMock->method('makePayment')->willReturn(true);
+        $this->bank = $this->createMock(Bank::class);
+        $this->bank->method('makePayment')->willReturn(true);
 
-        $bankMock->expects($this->once())->method('makePayment')->with($account_number = 123456, $amount = 100, $currency = 'USD');
+        $this->bank->expects($this->once())->method('makePayment')->with($account_number = 123456, $amount = 100, $currency = 'USD');
 
-        $result = $bankMock->makePayment($account_number, $amount, $currency);
+        $result = $this->bank->makePayment($account_number, $amount, $currency);
         
         $this->assertTrue($result);
+    }
+
+    /** @test */
+    public function testSendMoneyCurrencyMismatchException()
+    {
+        // Create a mock object for the Bank class
+        $this->bank = $this->createMock(Bank::class);
+
+        // Define the expectations for the sendMoney method to throw a currency mismatch exception
+        $this->bank->expects($this->once())
+            ->method('sendMoney')
+            ->will($this->throwException(new Exception('Currency mismatch: expected USD, got EUR')));
+
+        // Verify that the exception is thrown when the sendMoney method is called
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Currency mismatch: expected USD, got EUR');
+
+        $this->bank->sendMoney('1234567890', 1000, 'USD');
+    }
+
+    /** @test */
+    public function testSendMoneyInsufficientBalanceException()
+    {
+        // Create a mock object for the Bank class
+        $this->bank = $this->createMock(Bank::class);
+
+        // Define the expectations for the sendMoney method to throw an insufficient balance exception
+        $this->bank->expects($this->once())
+            ->method('sendMoney')
+            ->will($this->throwException(new Exception('Insufficient balance')));
+
+        // Verify that the exception is thrown when the sendMoney method is called
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Insufficient balance');
+
+        $this->bank->sendMoney('1234567890', 1000, 'USD');
     }
 }
