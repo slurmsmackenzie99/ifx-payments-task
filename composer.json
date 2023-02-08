@@ -1,0 +1,17 @@
+{
+    "name": "zmarl/ifx",
+    "autoload": {
+        "psr-4": {
+            "Zmarl\\Ifx\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Pawel Zmarlak",
+            "email": "zmarlakpawel@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    }
+}
